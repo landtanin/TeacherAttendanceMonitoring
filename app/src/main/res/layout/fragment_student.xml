@@ -9,13 +9,23 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_student"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="0dp"
+        android:layout_weight="4"/>
 
-    <TextView
-        android:id="@+id/noStudent"
-        android:layout_centerInParent="true"
-        android:layout_width="wrap_content"
+
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/btn_refresh"
+        android:background="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:text="Refresh"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="@dimen/edit_txt_login_width"
         android:layout_height="wrap_content"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".1"/>
 
 </LinearLayout>
 </layout>

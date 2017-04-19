@@ -10,11 +10,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.landtanin.teacherattendancemonitoring.R;
 import com.landtanin.teacherattendancemonitoring.adapter.StudentListAdapter;
 import com.landtanin.teacherattendancemonitoring.dao.LecturerModuleCollectionDao;
 import com.landtanin.teacherattendancemonitoring.dao.StudentAttendanceDao;
+import com.landtanin.teacherattendancemonitoring.dao.StudentStatusDao;
 import com.landtanin.teacherattendancemonitoring.databinding.FragmentStudentBinding;
 import com.landtanin.teacherattendancemonitoring.manager.HttpManager;
 import com.landtanin.teacherattendancemonitoring.manager.http.ApiService;
@@ -84,7 +86,93 @@ public class FragmentStudent extends Fragment {
         dialog.show();
         getStudent(moduleId);
 
+        b.btnRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                getStudentStatus();
+
+            }
+        });
+
+    }
+
+    private void getStudentStatus() {
+        dialog = new ProgressDialog(getContext());
+        dialog.setMessage("Refreshing...");
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.show();
+
+        ApiService apiService = HttpManager.getInstance().create(ApiService.class);
+        //        apiService.loadStudentModule(Authorization,Content_Type,developer.getMemberID(),TopicId)
+        apiService.loadStudentStatus(moduleId)
+                .asObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Utils.getInstance().defaultSubscribeScheduler())
+                .unsubscribeOn(Utils.getInstance().defaultSubscribeScheduler())
+                .subscribe(new Action1<LecturerModuleCollectionDao>() {
+                    @Override
+                    public void call(LecturerModuleCollectionDao response) {
+
+                        Realm realm = Realm.getDefaultInstance();
+                        realm.beginTransaction();
+//                        realm.deleteAll(); // clear the current data before load new data
+                        realm.delete(StudentStatusDao.class); // delete only data of a specific class
+                        realm.copyToRealmOrUpdate(response.getStudentsStatus());
+                        realm.commitTransaction();
+                        dialog.dismiss();
+
+                        compareAndUpdate();
+
+                        Log.d("MainActivity getStudent", "call success");
+
+                    }
+
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        dialog.dismiss();
+                        Utils.getInstance().onHoneyToast("MainActivity STUDENT "+throwable.getLocalizedMessage());
+
+                    }
+                });
+    }
+
+    private void compareAndUpdate() {
+
+        realm = Realm.getDefaultInstance();
+        RealmResults<StudentAttendanceDao> students = realm.where(StudentAttendanceDao.class).findAll();
+        RealmResults<StudentStatusDao> studentsStatus = realm.where(StudentStatusDao.class).findAll();
+
+        if (studentsStatus.size()!=0) {
+
+            realm.beginTransaction();
+            for (int i = 0; i < students.size(); i++) {
+
+                if (studentsStatus.size() != 0) {
+
+                    for (int j = 0; j < studentsStatus.size(); j++) {
+
+                        if (students.get(i).getId() == studentsStatus.get(j).getIdStatus()) {
+
+
+                            students.get(i).setATTRateToMod("checked");
+
+                        }
+
+                    }
+
+                    // TODO clear data
+                } else {
+
+                    students.get(i).setATTRateToMod("end");
+
+                }
+
+            }
+            realm.commitTransaction();
+        }
 
     }
 
@@ -122,13 +210,15 @@ public class FragmentStudent extends Fragment {
 
                             b.rvStudent.setAdapter(mStudentListAdapter);
                             b.rvStudent.setHasFixedSize(true);
-                            b.noStudent.setVisibility(View.GONE);
+//                            b.noStudent.setVisibility(View.GONE);
+                            getStudentStatus();
 
                         } else {
 
-                            b.rvStudent.setVisibility(View.GONE);
-                            b.noStudent.setText("You are free today");
-                            b.noStudent.setVisibility(View.VISIBLE);
+//                            b.rvStudent.setVisibility(View.GONE);
+//                            b.noStudent.setText("You are free today");
+//                            b.noStudent.setVisibility(View.VISIBLE);
+                            Toast.makeText(getContext(), "No ones have registered", Toast.LENGTH_SHORT).show();
 
                         }
 

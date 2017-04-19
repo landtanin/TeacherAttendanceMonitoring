@@ -28,4 +28,8 @@ public interface ApiService {
     @POST("studentAttendanceGet.php")
     rx.Observable<LecturerModuleCollectionDao> loadModuleStudent(@Field("module_id") String module_id);
 
+    @FormUrlEncoded
+    @POST("studentStatusGet.php")
+    rx.Observable<LecturerModuleCollectionDao> loadStudentStatus(@Field("module_id") String module_id);
+
 }

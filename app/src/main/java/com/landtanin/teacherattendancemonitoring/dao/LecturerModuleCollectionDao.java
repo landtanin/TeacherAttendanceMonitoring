@@ -69,4 +69,18 @@ public class LecturerModuleCollectionDao {
         this.students = students;
     }
 
+    // ---------------------------------------------------------------
+
+    @SerializedName("students_status")
+    @Expose
+    private List<StudentStatusDao> students_status = null;
+
+    public List<StudentStatusDao> getStudentsStatus() {
+        return students_status;
+    }
+
+    public void setStudentsStatus(List<StudentStatusDao> students_status) {
+        this.students_status = students_status;
+    }
+
 }
