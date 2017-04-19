@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TeacherAttendanceMonitoring</string>
+
+    <string-array name="date">
+
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+
+    </string-array>
+</resources>
