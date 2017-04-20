@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TeacherAttendanceMonitoring</string>
+    <string name="app_name">UoN monitoring</string>
 
     <string-array name="date">
 
