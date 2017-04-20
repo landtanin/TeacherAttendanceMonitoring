@@ -147,7 +147,7 @@ public class FragmentStudent extends Fragment {
 
         if (studentsStatus.size()!=0) {
 
-            realm.beginTransaction();
+
             for (int i = 0; i < students.size(); i++) {
 
                 if (studentsStatus.size() != 0) {
@@ -156,22 +156,24 @@ public class FragmentStudent extends Fragment {
 
                         if (students.get(i).getId() == studentsStatus.get(j).getIdStatus()) {
 
-
+                            realm.beginTransaction();
                             students.get(i).setATTRateToMod("checked");
-
+                            realm.commitTransaction();
                         }
 
                     }
 
                     // TODO clear data
-                } else {
+                }
+                else {
 
+                    realm.beginTransaction();
                     students.get(i).setATTRateToMod("end");
-
+                    realm.commitTransaction();
                 }
 
             }
-            realm.commitTransaction();
+
         }
 
     }

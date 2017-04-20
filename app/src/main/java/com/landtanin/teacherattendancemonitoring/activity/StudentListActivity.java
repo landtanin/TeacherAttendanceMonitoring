@@ -16,6 +16,7 @@ import java.util.List;
 public class StudentListActivity extends AppCompatActivity {
 
     ActivityStudentListBinding b;
+    private String moduleId;
     private StudentListAdapter mStudentListAdapter;
     private List<StudentListItem> mStudentListItems = new ArrayList<>();
 
@@ -39,7 +40,9 @@ public class StudentListActivity extends AppCompatActivity {
 
     private void initInstance() {
 
+        moduleId = getIntent().getStringExtra("module_id");
         setSupportActionBar(b.studentListActivityToolbar);
+        b.txtToolbarMainActivity.setText(moduleId);
 
     }
 

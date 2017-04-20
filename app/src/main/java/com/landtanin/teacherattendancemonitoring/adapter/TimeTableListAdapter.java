@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,8 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
     Context mContext;
     ClickListener mClickListener;
     int redColor, greenColor, greyColor, indegoColor, statusTxtGreenColor, blackColor;
+    private String moduleId;
+    private static final String TAG = "TimeTableListAdapter";
 
 //    public TimeTableListAdapter(List<TimeTableListItem> moduleItemList, Context context) {
 //        mtimeTableItemList = moduleItemList;
@@ -67,7 +70,7 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         RecyclerViewHolder itemHolder = (RecyclerViewHolder) holder; // it needs RecyclerViewHolder, not RecyclerView.ViewHolder
-        final LecturerModuleDao timeTableItem = getData().get(position);
+        LecturerModuleDao timeTableItem = getData().get(position);
 
         itemHolder.moduleNameTxt.setText(timeTableItem.getName());
         itemHolder.moduleIdTxt.setText(timeTableItem.getModuleId());
@@ -79,11 +82,7 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
         } else if (timeTableItem.getModStatus().equals("inactive")) {
             itemHolder.itemView.setBackgroundColor(indegoColor);
             itemHolder.statusTxt.setTextColor(blackColor);
-        } else if (timeTableItem.getModStatus().equals("no more class")) {
-            itemHolder.itemView.setBackgroundColor(greyColor);
-            itemHolder.statusTxt.setTextColor(blackColor);
         }
-
 
         SimpleDateFormat currentTimeFormat = new SimpleDateFormat("HH:mm");
         String timeStr = currentTimeFormat.format(timeTableItem.getStartDate())
@@ -92,11 +91,18 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
 
         itemHolder.locationTxt.setText(timeTableItem.getRoom());
 
+//        SharedPreferences prefs = Contextor.getInstance().getContext().getSharedPreferences("login_state", Context.MODE_PRIVATE);
+
+        final LecturerModuleDao forClick = getData().get(position);
+        final int positionOnclick = position;
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                mClickListener.myOnClickListener(timeTableItem);
+                moduleId = forClick.getModuleId();
+                Log.w(TAG, "onBindViewHolder: moduleId = " + moduleId);
+                mClickListener.myOnClickListener(moduleId, positionOnclick);
 
             }
         });
@@ -123,8 +129,6 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
         return getData().size();
     }
 
-
-
     public class RecyclerViewHolder extends RecyclerView.ViewHolder{
 
         TextView moduleNameTxt, moduleIdTxt, statusTxt, timeTxt, locationTxt;
@@ -142,7 +146,7 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
     }
 
     public interface ClickListener {
-        void myOnClickListener(LecturerModuleDao lecturerModuleDao);
+        void myOnClickListener(String moduleId, int itemNumber);
     }
 
 }

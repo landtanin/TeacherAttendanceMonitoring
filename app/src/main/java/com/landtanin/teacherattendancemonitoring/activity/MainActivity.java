@@ -7,15 +7,24 @@ import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.crashlytics.android.Crashlytics;
 import com.landtanin.teacherattendancemonitoring.R;
+import com.landtanin.teacherattendancemonitoring.dao.LecturerModuleCollectionDao;
+import com.landtanin.teacherattendancemonitoring.dao.LecturerModuleDao;
 import com.landtanin.teacherattendancemonitoring.databinding.ActivityMainBinding;
 import com.landtanin.teacherattendancemonitoring.fragment.MainFragment;
+import com.landtanin.teacherattendancemonitoring.manager.HttpManager;
+import com.landtanin.teacherattendancemonitoring.manager.http.ApiService;
+import com.landtanin.teacherattendancemonitoring.util.Utils;
 
 import io.fabric.sdk.android.Fabric;
+import io.realm.Realm;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -79,53 +88,53 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
-//
-//        else if (item.getItemId() == R.id.action_refresh) {
-//
-//            dialog = new ProgressDialog(this);
-//            dialog.setMessage("Refreshing...");
-//            dialog.setCancelable(false);
-//            dialog.setCanceledOnTouchOutside(false);
-//            dialog.show();
-//
-//            SharedPreferences prefs = this.getSharedPreferences("login_state", Context.MODE_PRIVATE);
-//            int student_id = prefs.getInt("student_id", 0);
-//            ApiService apiService = HttpManager.getInstance().create(ApiService.class);
-////        apiService.loadStudentModule(Authorization,Content_Type,developer.getMemberID(),TopicId)
-//            apiService.loadStudentModule("heyhey", student_id)
-//                    .asObservable()
-//                    .observeOn(AndroidSchedulers.mainThread())
-//                    .subscribeOn(Utils.getInstance().defaultSubscribeScheduler())
-//                    .unsubscribeOn(Utils.getInstance().defaultSubscribeScheduler())
-//                    .subscribe(new Action1<StudentModuleCollectionDao>() {
-//                        @Override
-//                        public void call(StudentModuleCollectionDao response) {
-//
-//                            Realm realm = Realm.getDefaultInstance();
-//                            realm.beginTransaction();
-////                        realm.deleteAll(); // clear the current data before load new data
-//                            realm.delete(StudentModuleDao.class); // delete only data of a specific class
-//                            realm.copyToRealmOrUpdate(response.getData());
-//                            realm.commitTransaction();
-//                            dialog.dismiss();
-//                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
-//                            startActivity(intent);
-//                            finish();
-//
-//                            Log.d("MainActivity getStudent", "call success");
-//
-//                        }
-//
-//                    }, new Action1<Throwable>() {
-//                        @Override
-//                        public void call(Throwable throwable) {
-//                            dialog.dismiss();
-//                            Utils.getInstance().onHoneyToast("MainActivity STUDENT "+throwable.getLocalizedMessage());
-//
-//                        }
-//                    });
-//
-//        }
+
+        else if (item.getItemId() == R.id.action_refresh) {
+
+            dialog = new ProgressDialog(this);
+            dialog.setMessage("Refreshing...");
+            dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.show();
+
+            SharedPreferences prefs = this.getSharedPreferences("login_state", Context.MODE_PRIVATE);
+            int lecturer_id = prefs.getInt("lecturer_id", 0);
+            ApiService apiService = HttpManager.getInstance().create(ApiService.class);
+//        apiService.loadStudentModule(Authorization,Content_Type,developer.getMemberID(),TopicId)
+            apiService.loadLecturerModule(lecturer_id)
+                    .asObservable()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Utils.getInstance().defaultSubscribeScheduler())
+                    .unsubscribeOn(Utils.getInstance().defaultSubscribeScheduler())
+                    .subscribe(new Action1<LecturerModuleCollectionDao>() {
+                        @Override
+                        public void call(LecturerModuleCollectionDao response) {
+
+                            Realm realm = Realm.getDefaultInstance();
+                            realm.beginTransaction();
+//                        realm.deleteAll(); // clear the current data before load new data
+                            realm.delete(LecturerModuleDao.class); // delete only data of a specific class
+                            realm.copyToRealmOrUpdate(response.getData());
+                            realm.commitTransaction();
+                            dialog.dismiss();
+                            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+
+                            Log.d("MainActivity refresh getLecturer", "call success");
+
+                        }
+
+                    }, new Action1<Throwable>() {
+                        @Override
+                        public void call(Throwable throwable) {
+                            dialog.dismiss();
+                            Utils.getInstance().onHoneyToast("MainActivity refresh Lecturer"+throwable.getLocalizedMessage());
+
+                        }
+                    });
+
+        }
 
         return super.onOptionsItemSelected(item);
     }

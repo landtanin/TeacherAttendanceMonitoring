@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.landtanin.teacherattendancemonitoring.R;
 import com.landtanin.teacherattendancemonitoring.activity.StudentListActivity;
@@ -89,15 +90,29 @@ public class SaturdayFragment extends Fragment {
 
             StaggeredGridLayoutManager rvLayoutManager = new StaggeredGridLayoutManager(1, 1);
             b.rvSaturdayTimeTable.setLayoutManager(rvLayoutManager);
-            mTimeTableListAdapter = new TimeTableListAdapter(getContext(), lecturerModuleDao, true, new TimeTableListAdapter.ClickListener(){
-                @Override
-                public void myOnClickListener(LecturerModuleDao moduleDao) {
 
-                    Intent intent = new Intent(getContext(), StudentListActivity.class);
-                    intent.putExtra("module_id", moduleDao.getModuleId());
-                    startActivity(intent);
+            TimeTableListAdapter.ClickListener clickListener = new TimeTableListAdapter.ClickListener() {
+                @Override
+                public void myOnClickListener(String moduleId, int itemNumber) {
+
+                    RealmResults<LecturerModuleDao> forClickLecturerModuleDao = realm.where(LecturerModuleDao.class).equalTo("day","Sat", Case.SENSITIVE).findAll();
+
+                    if (forClickLecturerModuleDao.get(itemNumber).getModStatus().equals("active")) {
+
+                        Intent intent = new Intent(getContext(), StudentListActivity.class);
+                        intent.putExtra("module_id", moduleId);
+                        startActivity(intent);
+
+                    } else {
+
+                        Toast.makeText(getContext(), "Module is inactive", Toast.LENGTH_SHORT).show();
+
+                    }
+
                 }
-            });
+            };
+
+            mTimeTableListAdapter = new TimeTableListAdapter(getContext(), lecturerModuleDao, true, clickListener);
 
             b.rvSaturdayTimeTable.setAdapter(mTimeTableListAdapter);
             b.rvSaturdayTimeTable.setHasFixedSize(true);

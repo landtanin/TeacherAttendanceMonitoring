@@ -2,15 +2,20 @@ package com.landtanin.teacherattendancemonitoring.fragment;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.landtanin.teacherattendancemonitoring.R;
+import com.landtanin.teacherattendancemonitoring.dao.LecturerModuleDao;
+import com.landtanin.teacherattendancemonitoring.dao.StudentAttendanceDao;
 import com.landtanin.teacherattendancemonitoring.databinding.FragmentMainBinding;
 import com.landtanin.teacherattendancemonitoring.fragment.day.FridayFragment;
 import com.landtanin.teacherattendancemonitoring.fragment.day.MondayFragment;
@@ -19,7 +24,21 @@ import com.landtanin.teacherattendancemonitoring.fragment.day.SundayFragment;
 import com.landtanin.teacherattendancemonitoring.fragment.day.ThursdayFragment;
 import com.landtanin.teacherattendancemonitoring.fragment.day.TuesdayFragment;
 import com.landtanin.teacherattendancemonitoring.fragment.day.WednesdayFragment;
+import com.landtanin.teacherattendancemonitoring.manager.HttpManager;
 import com.landtanin.teacherattendancemonitoring.manager.SmartFragmentStatePagerAdapter;
+import com.landtanin.teacherattendancemonitoring.manager.TodayModule;
+import com.landtanin.teacherattendancemonitoring.manager.http.ApiService;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import io.realm.Realm;
+import io.realm.RealmResults;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -28,6 +47,13 @@ import com.landtanin.teacherattendancemonitoring.manager.SmartFragmentStatePager
 public class MainFragment extends Fragment {
 
     FragmentMainBinding b;
+    boolean run = true; //set it to false to stop the timer
+    Handler mHandler = new Handler();
+    private SimpleDateFormat timeFormat, dateFormat;
+    private static final int STATUS_ACTIVE = 1;
+    private static final int STATUS_INACTIVE = 2;
+    private static final String TAG = "MainFragment";
+    Realm realm;
 
     public MainFragment() {
         super();
@@ -69,6 +95,32 @@ public class MainFragment extends Fragment {
         // Note: State of variable initialized here could not be saved
         //       in onSavedInstanceState
 
+        statusUpdate();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (run) {
+                    try {
+
+                        Thread.sleep(20000);
+                        // every 20 secs
+
+                        mHandler.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                statusUpdate();
+                                Log.e(TAG, "run: ");
+
+                            }
+                        });
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }).start();
+
         FragmentMainPagerAdapter fragmentMainPagerAdapter = new FragmentMainPagerAdapter(getChildFragmentManager());
 
         b.fragmentMainViewPager.setAdapter(fragmentMainPagerAdapter);
@@ -96,6 +148,104 @@ public class MainFragment extends Fragment {
 
             }
         });
+
+
+    }
+
+    private void statusUpdate() {
+
+        TodayModule todayModule = TodayModule.getInstance();
+        RealmResults<LecturerModuleDao> lecturerModuleDao = todayModule.getTodayModule();
+
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<StudentAttendanceDao> students = realm.where(StudentAttendanceDao.class).findAll();
+
+        Calendar calendar = Calendar.getInstance();
+        Date nowStatusUpdate = calendar.getTime();
+
+        timeFormat = new SimpleDateFormat("HH:mm:ss");
+//        dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        if (lecturerModuleDao.size()!=0) {
+
+            for (int i = 0; i<lecturerModuleDao.size(); i++) {
+
+                int nowVSModuleStart = timeFormat.format(nowStatusUpdate)
+                        .compareTo(timeFormat.format(lecturerModuleDao.get(i).getStartDate()));
+                int nowVSModuleEnd = timeFormat.format(nowStatusUpdate)
+                        .compareTo(timeFormat.format(lecturerModuleDao.get(i).getEndDate()));
+
+                // module is not yet start
+                if (nowVSModuleStart < 0) {
+
+                    realmUpdateModStatus(i, lecturerModuleDao, STATUS_INACTIVE);
+
+                }
+                // start and not end
+                else if (nowVSModuleStart>=0 && nowVSModuleEnd<0) {
+
+                    realmUpdateModStatus(i, lecturerModuleDao, STATUS_ACTIVE);
+
+                }
+                // end
+                else if (nowVSModuleEnd>=0) {
+
+                    Log.e(TAG, "statusUpdate: nowVSModuleEnd = " + nowVSModuleEnd);
+                    Log.e(TAG, "statusUpdate: now = " + nowStatusUpdate);
+                    Log.e(TAG, "statusUpdate: end time " + lecturerModuleDao.get(i).getName() + " = " + lecturerModuleDao.get(i).getEndDate());
+
+                    realmUpdateModStatus(i, lecturerModuleDao, STATUS_INACTIVE);
+                    // TODO update end status
+
+                    updateEndStatus(lecturerModuleDao, i);
+
+                }
+
+            }
+
+        }
+
+    }
+
+    private void updateEndStatus(RealmResults<LecturerModuleDao> lecturerModuleDao, int i) {
+
+        ApiService apiService = HttpManager.getInstance().create(ApiService.class);
+        apiService.attendanceUpdate("end",lecturerModuleDao.get(i).getModuleId())
+                .enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i(TAG, "onResponse: " + response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i(TAG, "onFailure: " + t.toString());
+                Toast.makeText(getContext(), t.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void realmUpdateModStatus(int targetingModule, RealmResults<LecturerModuleDao> lecturerModuleDao, int status) {
+
+//        updateEndStatus(studentModuleDao);
+
+        String modStatus = null;
+        switch (status) {
+            case STATUS_ACTIVE:
+                modStatus = "active";
+                break;
+            case STATUS_INACTIVE:
+                modStatus = "inactive";
+                break;
+            default:
+                break;
+        }
+
+        Realm realm = Realm.getDefaultInstance();
+        realm.beginTransaction();
+        realm.copyToRealmOrUpdate(lecturerModuleDao).get(targetingModule).setModStatus(modStatus);
+        realm.commitTransaction();
+
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.landtanin.teacherattendancemonitoring.manager.http;
 
 import com.landtanin.teacherattendancemonitoring.dao.LecturerModuleCollectionDao;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
@@ -23,7 +25,6 @@ public interface ApiService {
     @POST("teacherModuleGet.php")
     rx.Observable<LecturerModuleCollectionDao> loadLecturerModule(@Field("lecturer_id") int lecturer_id);
 
-
     @FormUrlEncoded
     @POST("studentAttendanceGet.php")
     rx.Observable<LecturerModuleCollectionDao> loadModuleStudent(@Field("module_id") String module_id);
@@ -31,5 +32,11 @@ public interface ApiService {
     @FormUrlEncoded
     @POST("studentStatusGet.php")
     rx.Observable<LecturerModuleCollectionDao> loadStudentStatus(@Field("module_id") String module_id);
+
+    @FormUrlEncoded
+    @POST("teacherModuleClear.php")
+    Call<ResponseBody> attendanceUpdate
+            (@Field("status") String status,
+             @Field("module_id") String module_id);
 
 }
