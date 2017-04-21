@@ -32,9 +32,6 @@ public class LecturerModuleDao extends RealmObject implements RealmModel {
     @SerializedName("endDate")
     @Expose
     private Date endDate;
-    @SerializedName("repeatStatus")
-    @Expose
-    private String repeatStatus;
     @SerializedName("checkInStart")
     @Expose
     private Date checkInStart;
@@ -50,18 +47,15 @@ public class LecturerModuleDao extends RealmObject implements RealmModel {
     @SerializedName("LocLng")
     @Expose
     private double locLng;
-    @SerializedName("ModATTRate")
-    @Expose
-    private String modATTRate;
     @SerializedName("ModStatus")
     @Expose
     private String modStatus;
     @SerializedName("Day")
     @Expose
     private String day;
-    @SerializedName("Description")
+    @SerializedName("Lecturer")
     @Expose
-    private String description;
+    private String lecturer;
 
     public String getId() {
         return id;
@@ -101,14 +95,6 @@ public class LecturerModuleDao extends RealmObject implements RealmModel {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public String getRepeatStatus() {
-        return repeatStatus;
-    }
-
-    public void setRepeatStatus(String repeatStatus) {
-        this.repeatStatus = repeatStatus;
     }
 
     public Date getCheckInStart() {
@@ -151,14 +137,6 @@ public class LecturerModuleDao extends RealmObject implements RealmModel {
         this.locLng = locLng;
     }
 
-    public String getModATTRate() {
-        return modATTRate;
-    }
-
-    public void setModATTRate(String modATTRate) {
-        this.modATTRate = modATTRate;
-    }
-
     public String getModStatus() {
         return modStatus;
     }
@@ -175,12 +153,12 @@ public class LecturerModuleDao extends RealmObject implements RealmModel {
         this.day = day;
     }
 
-    public String getDescription() {
-        return description;
+    public String getLecturer() {
+        return lecturer;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLecturer(String lecturer) {
+        this.lecturer = lecturer;
     }
 
 }

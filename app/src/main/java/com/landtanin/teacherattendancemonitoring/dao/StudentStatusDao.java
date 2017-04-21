@@ -31,15 +31,9 @@ public class StudentStatusDao extends RealmObject implements RealmModel {
     @SerializedName("AVG")
     @Expose
     private String aVG;
-    @SerializedName("LocLat")
+    @SerializedName("AttendanceStatus")
     @Expose
-    private String locLat;
-    @SerializedName("LocLng")
-    @Expose
-    private String locLng;
-    @SerializedName("ATTRateToMod")
-    @Expose
-    private String aTTRateToMod;
+    private String attendanceStatus;
 
     public int getIdStatus() {
         return id;
@@ -81,28 +75,11 @@ public class StudentStatusDao extends RealmObject implements RealmModel {
         this.aVG = aVG;
     }
 
-    public String getLocLatStatus() {
-        return locLat;
+    public String getAttendanceStatusStatus() {
+        return attendanceStatus;
     }
 
-    public void setLocLatStatus(String locLat) {
-        this.locLat = locLat;
+    public void setAttendanceStatusStatus(String attendanceStatus) {
+        this.attendanceStatus = attendanceStatus;
     }
-
-    public String getLocLngStatus() {
-        return locLng;
-    }
-
-    public void setLocLngStatus(String locLng) {
-        this.locLng = locLng;
-    }
-
-    public String getATTRateToModStatus() {
-        return aTTRateToMod;
-    }
-
-    public void setATTRateToModStatus(String aTTRateToMod) {
-        this.aTTRateToMod = aTTRateToMod;
-    }
-
 }

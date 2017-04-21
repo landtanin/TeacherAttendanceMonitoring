@@ -53,7 +53,8 @@ public class MainFragment extends Fragment {
     private static final int STATUS_ACTIVE = 1;
     private static final int STATUS_INACTIVE = 2;
     private static final String TAG = "MainFragment";
-    Realm realm;
+    private int updateAllow = STATUS_INACTIVE;
+    private int targetingModule = 1000;
 
     public MainFragment() {
         super();
@@ -179,12 +180,14 @@ public class MainFragment extends Fragment {
                 if (nowVSModuleStart < 0) {
 
                     realmUpdateModStatus(i, lecturerModuleDao, STATUS_INACTIVE);
+//                    updateAllow = STATUS_INACTIVE;
 
                 }
                 // start and not end
                 else if (nowVSModuleStart>=0 && nowVSModuleEnd<0) {
 
                     realmUpdateModStatus(i, lecturerModuleDao, STATUS_ACTIVE);
+                    targetingModule = i;
 
                 }
                 // end
@@ -196,10 +199,20 @@ public class MainFragment extends Fragment {
 
                     realmUpdateModStatus(i, lecturerModuleDao, STATUS_INACTIVE);
                     // TODO update end status
+//                    updateAllow = STATUS_INACTIVE
 
-                    updateEndStatus(lecturerModuleDao, i);
+                    if (targetingModule==i) {
+
+                        Log.d(TAG, "statusUpdate: updateAllow");
+                        updateEndStatus(lecturerModuleDao, targetingModule);
+                        targetingModule = 1000;
+
+
+                    }
 
                 }
+
+
 
             }
 
@@ -209,6 +222,7 @@ public class MainFragment extends Fragment {
 
     private void updateEndStatus(RealmResults<LecturerModuleDao> lecturerModuleDao, int i) {
 
+        Log.d(TAG, "updateEndStatus: ");
         ApiService apiService = HttpManager.getInstance().create(ApiService.class);
         apiService.attendanceUpdate("end",lecturerModuleDao.get(i).getModuleId())
                 .enqueue(new Callback<ResponseBody>() {
@@ -228,6 +242,7 @@ public class MainFragment extends Fragment {
     private void realmUpdateModStatus(int targetingModule, RealmResults<LecturerModuleDao> lecturerModuleDao, int status) {
 
 //        updateEndStatus(studentModuleDao);
+        // update to time table list adapter
 
         String modStatus = null;
         switch (status) {

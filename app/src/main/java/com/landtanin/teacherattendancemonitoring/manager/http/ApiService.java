@@ -22,7 +22,7 @@ public interface ApiService {
              @Field("password") String password);
 
     @FormUrlEncoded
-    @POST("teacherModuleGet.php")
+    @POST("lecturerModuleGet.php")
     rx.Observable<LecturerModuleCollectionDao> loadLecturerModule(@Field("lecturer_id") int lecturer_id);
 
     @FormUrlEncoded
@@ -34,7 +34,7 @@ public interface ApiService {
     rx.Observable<LecturerModuleCollectionDao> loadStudentStatus(@Field("module_id") String module_id);
 
     @FormUrlEncoded
-    @POST("teacherModuleClear.php")
+    @POST("lecturerModuleClear.php")
     Call<ResponseBody> attendanceUpdate
             (@Field("status") String status,
              @Field("module_id") String module_id);

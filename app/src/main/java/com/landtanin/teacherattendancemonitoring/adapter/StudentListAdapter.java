@@ -23,7 +23,7 @@ import io.realm.RealmRecyclerViewAdapter;
 public class StudentListAdapter extends RealmRecyclerViewAdapter<StudentAttendanceDao,RecyclerView.ViewHolder>{
 
     Context mContext;
-    int redColor, greenColor, greyColor, indegoColor, statusTxtGreenColor, blackColor;
+    int redColor, greenColor, greyColor, indegoColor, statusTxtGreenColor, blackColor, orangeColor;
 
     public StudentListAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<StudentAttendanceDao> data, boolean autoUpdate) {
         super(context, data, autoUpdate);
@@ -35,6 +35,7 @@ public class StudentListAdapter extends RealmRecyclerViewAdapter<StudentAttendan
 
         redColor = ContextCompat.getColor(parent.getContext(), R.color.colorPink100);
         greenColor = ContextCompat.getColor(parent.getContext(), R.color.colorRealGreen100);
+        orangeColor = ContextCompat.getColor(parent.getContext(), R.color.colorOrange100);
         statusTxtGreenColor = ContextCompat.getColor(parent.getContext(), R.color.colorActiveStatus);
         greyColor = ContextCompat.getColor(parent.getContext(), R.color.colorGrey500);
         indegoColor = ContextCompat.getColor(parent.getContext(), R.color.colorIndigo50);
@@ -50,14 +51,16 @@ public class StudentListAdapter extends RealmRecyclerViewAdapter<StudentAttendan
 
 
         RecyclerViewHolder itemHolder = (RecyclerViewHolder) holder; // it needs RecyclerViewHolder, not RecyclerView.ViewHolder
-        final StudentAttendanceDao studentListItem = getData().get(position);
+        StudentAttendanceDao studentListItem = getData().get(position);
 
         itemHolder.studentNameTxt.setText(studentListItem.getName());
         itemHolder.studentIdTxt.setText(studentListItem.getStudentId());
 
-        if (studentListItem.getATTRateToMod().equals("checked")) {
+        if (studentListItem.getAttendanceStatus().equals("checked")) {
             itemHolder.itemView.setBackgroundColor(greenColor);
-        } else if (studentListItem.getATTRateToMod().equals("end")) {
+        } else if (studentListItem.getAttendanceStatus().equals("late")) {
+            itemHolder.itemView.setBackgroundColor(orangeColor);
+        } else if (studentListItem.getAttendanceStatus().equals("end")) {
             itemHolder.itemView.setBackgroundColor(indegoColor);
         }
 

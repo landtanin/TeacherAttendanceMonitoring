@@ -157,7 +157,7 @@ public class FragmentStudent extends Fragment {
                         if (students.get(i).getId() == studentsStatus.get(j).getIdStatus()) {
 
                             realm.beginTransaction();
-                            students.get(i).setATTRateToMod("checked");
+                            students.get(i).setAttendanceStatus(studentsStatus.get(j).getAttendanceStatusStatus());
                             realm.commitTransaction();
                         }
 
@@ -165,12 +165,12 @@ public class FragmentStudent extends Fragment {
 
                     // TODO clear data
                 }
-                else {
-
-                    realm.beginTransaction();
-                    students.get(i).setATTRateToMod("end");
-                    realm.commitTransaction();
-                }
+//                else {
+//
+//                    realm.beginTransaction();
+//                    students.get(i).setAttendanceStatus("end");
+//                    realm.commitTransaction();
+//                }
 
             }
 
