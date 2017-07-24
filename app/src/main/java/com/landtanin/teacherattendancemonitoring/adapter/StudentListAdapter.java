@@ -49,19 +49,21 @@ public class StudentListAdapter extends RealmRecyclerViewAdapter<StudentAttendan
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
+        if (getData().size()!=0) {
+            RecyclerViewHolder itemHolder = (RecyclerViewHolder) holder; // it needs RecyclerViewHolder, not RecyclerView.ViewHolder
+            StudentAttendanceDao studentListItem = getData().get(position);
 
-        RecyclerViewHolder itemHolder = (RecyclerViewHolder) holder; // it needs RecyclerViewHolder, not RecyclerView.ViewHolder
-        StudentAttendanceDao studentListItem = getData().get(position);
+            itemHolder.studentNameTxt.setText(studentListItem.getName());
+            itemHolder.studentIdTxt.setText(studentListItem.getStudentId());
 
-        itemHolder.studentNameTxt.setText(studentListItem.getName());
-        itemHolder.studentIdTxt.setText(studentListItem.getStudentId());
+            if (studentListItem.getAttendanceStatus().equals("checked")) {
+                itemHolder.itemView.setBackgroundColor(greenColor);
+            } else if (studentListItem.getAttendanceStatus().equals("late")) {
+                itemHolder.itemView.setBackgroundColor(orangeColor);
+            } else if (studentListItem.getAttendanceStatus().equals("end")) {
+                itemHolder.itemView.setBackgroundColor(indegoColor);
+            }
 
-        if (studentListItem.getAttendanceStatus().equals("checked")) {
-            itemHolder.itemView.setBackgroundColor(greenColor);
-        } else if (studentListItem.getAttendanceStatus().equals("late")) {
-            itemHolder.itemView.setBackgroundColor(orangeColor);
-        } else if (studentListItem.getAttendanceStatus().equals("end")) {
-            itemHolder.itemView.setBackgroundColor(indegoColor);
         }
 
     }

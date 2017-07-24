@@ -5,7 +5,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,27 +199,24 @@ public class FragmentStudent extends Fragment {
                         realm.commitTransaction();
                         dialog.dismiss();
 
+
                         realm = Realm.getDefaultInstance();
-                        RealmResults<StudentAttendanceDao> studentAttendanceDao = realm.where(StudentAttendanceDao.class).findAll();
+                        RealmResults<StudentAttendanceDao> studentToShow = realm.where(StudentAttendanceDao.class).findAll();
+//                        Log.w("FragmentStudent", String.valueOf(studentToShow.size()));
 
-                        Log.w("FragmentStudent", String.valueOf(studentAttendanceDao.size()));
+//                            StaggeredGridLayoutManager rvLayoutManager = new StaggeredGridLayoutManager(1, 1);
 
-                        if (studentAttendanceDao.size()!=0) {
+                        if (studentToShow.size()!=0) {
 
-                            StaggeredGridLayoutManager rvLayoutManager = new StaggeredGridLayoutManager(1, 1);
+                            LinearLayoutManager rvLayoutManager = new LinearLayoutManager(getContext());
                             b.rvStudent.setLayoutManager(rvLayoutManager);
-                            mStudentListAdapter = new StudentListAdapter(getContext(), studentAttendanceDao, true);
-
+                            mStudentListAdapter = new StudentListAdapter(getContext(), studentToShow, true);
                             b.rvStudent.setAdapter(mStudentListAdapter);
                             b.rvStudent.setHasFixedSize(true);
-//                            b.noStudent.setVisibility(View.GONE);
                             getStudentStatus();
 
                         } else {
 
-//                            b.rvStudent.setVisibility(View.GONE);
-//                            b.noStudent.setText("You are free today");
-//                            b.noStudent.setVisibility(View.VISIBLE);
                             Toast.makeText(getContext(), "No ones have registered", Toast.LENGTH_SHORT).show();
 
                         }

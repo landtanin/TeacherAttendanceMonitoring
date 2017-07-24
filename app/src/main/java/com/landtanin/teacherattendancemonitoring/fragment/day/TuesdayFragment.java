@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -88,14 +87,15 @@ public class TuesdayFragment extends Fragment {
 
         if (lecturerModuleDao.size()!=0) {
 
-            StaggeredGridLayoutManager rvLayoutManager = new StaggeredGridLayoutManager(1, 1);
+            LinearLayoutManager rvLayoutManager = new LinearLayoutManager(getContext());
             b.rvTuesdayTimeTable.setLayoutManager(rvLayoutManager);
 
             TimeTableListAdapter.ClickListener clickListener = new TimeTableListAdapter.ClickListener() {
                 @Override
                 public void myOnClickListener(String moduleId, int itemNumber) {
 
-                    RealmResults<LecturerModuleDao> forClickLecturerModuleDao = realm.where(LecturerModuleDao.class).equalTo("day","Tue", Case.SENSITIVE).findAll();
+                    RealmResults<LecturerModuleDao> forClickLecturerModuleDao
+                            = realm.where(LecturerModuleDao.class).equalTo("day","Tue", Case.SENSITIVE).findAll();
 
                     if (forClickLecturerModuleDao.get(itemNumber).getModStatus().equals("active")) {
 
@@ -113,7 +113,6 @@ public class TuesdayFragment extends Fragment {
             };
 
             mTimeTableListAdapter = new TimeTableListAdapter(getContext(), lecturerModuleDao, true, clickListener);
-
             b.rvTuesdayTimeTable.setAdapter(mTimeTableListAdapter);
             b.rvTuesdayTimeTable.setHasFixedSize(true);
 
@@ -125,9 +124,9 @@ public class TuesdayFragment extends Fragment {
 
         }
 
-//        connectToDataBase();
+    //        connectToDataBase();
 
-    }
+        }
 
     private void connectToDataBase() {
 

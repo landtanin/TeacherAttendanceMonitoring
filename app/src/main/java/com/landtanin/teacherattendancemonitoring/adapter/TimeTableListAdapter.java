@@ -51,7 +51,6 @@ public class TimeTableListAdapter extends RealmRecyclerViewAdapter<LecturerModul
     }
 
 
-
     @Override
     public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 

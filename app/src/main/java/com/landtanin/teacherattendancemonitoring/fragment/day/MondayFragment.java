@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,56 +73,52 @@ public class MondayFragment extends Fragment {
         // Init Fragment level's variable(s) here
     }
 
-
     @SuppressWarnings("UnusedParameters")
     private void initInstances(View rootView, Bundle savedInstanceState) {
         // Init 'View' instance(s) with rootView.findViewById here
         // Note: State of variable initialized here could not be saved
         //       in onSavedInstanceState
         realm = Realm.getDefaultInstance();
-        RealmResults<LecturerModuleDao> lecturerModuleDao = realm.where(LecturerModuleDao.class).equalTo("day","Mon", Case.SENSITIVE).findAll();
+        RealmResults<LecturerModuleDao> moduleToShow = realm.where(LecturerModuleDao.class).equalTo("day","Mon", Case.SENSITIVE).findAll();
+        Log.w("MONDAY_module", String.valueOf(moduleToShow.size()));
 
+    if (moduleToShow.size()!=0) {
 
-        Log.w("MONDAY_module", String.valueOf(lecturerModuleDao.size()));
+        LinearLayoutManager rvLayoutManager = new LinearLayoutManager(getContext());
+        b.rvMondayTimeTable.setLayoutManager(rvLayoutManager);
 
-        if (lecturerModuleDao.size()!=0) {
+        TimeTableListAdapter.ClickListener clickListener = new TimeTableListAdapter.ClickListener() {
+            @Override
+            public void myOnClickListener(String moduleId, int itemNumber) {
 
-            StaggeredGridLayoutManager rvLayoutManager = new StaggeredGridLayoutManager(1, 1);
-            b.rvMondayTimeTable.setLayoutManager(rvLayoutManager);
+                RealmResults<LecturerModuleDao> forClickLecturerModuleDao
+                        = realm.where(LecturerModuleDao.class).equalTo("day","Mon", Case.SENSITIVE).findAll();
 
-            TimeTableListAdapter.ClickListener clickListener = new TimeTableListAdapter.ClickListener() {
-                @Override
-                public void myOnClickListener(String moduleId, int itemNumber) {
+                if (forClickLecturerModuleDao.get(itemNumber).getModStatus().equals("active")) {
 
-                    RealmResults<LecturerModuleDao> forClickLecturerModuleDao = realm.where(LecturerModuleDao.class).equalTo("day","Mon", Case.SENSITIVE).findAll();
+                    Intent intent = new Intent(getContext(), StudentListActivity.class);
+                    intent.putExtra("module_id", moduleId);
+                    startActivity(intent);
 
-                    if (forClickLecturerModuleDao.get(itemNumber).getModStatus().equals("active")) {
+                } else {
 
-                        Intent intent = new Intent(getContext(), StudentListActivity.class);
-                        intent.putExtra("module_id", moduleId);
-                        startActivity(intent);
-
-                    } else {
-
-                        Toast.makeText(getContext(), "Module is inactive", Toast.LENGTH_SHORT).show();
-
-                    }
+                    Toast.makeText(getContext(), "Module is inactive", Toast.LENGTH_SHORT).show();
 
                 }
-            };
+            }
+        };
 
-            mTimeTableListAdapter = new TimeTableListAdapter(getContext(), lecturerModuleDao, true, clickListener);
+        mTimeTableListAdapter = new TimeTableListAdapter(getContext(), moduleToShow, true, clickListener);
+        b.rvMondayTimeTable.setAdapter(mTimeTableListAdapter);
+        b.rvMondayTimeTable.setHasFixedSize(true);
 
-            b.rvMondayTimeTable.setAdapter(mTimeTableListAdapter);
-            b.rvMondayTimeTable.setHasFixedSize(true);
+    } else {
 
-        } else {
+        b.rvMondayTimeTable.setVisibility(View.GONE);
+        b.monNoModuleText.setText("You are free today");
+        b.monNoModuleText.setVisibility(View.VISIBLE);
 
-            b.rvMondayTimeTable.setVisibility(View.GONE);
-            b.monNoModuleText.setText("You are free today");
-            b.monNoModuleText.setVisibility(View.VISIBLE);
-
-        }
+    }
 
 
 //        connectToDataBase();

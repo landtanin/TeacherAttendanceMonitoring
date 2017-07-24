@@ -129,20 +129,20 @@ public class WednesdayFragment extends Fragment {
 
     }
 
-    private void connectToDataBase() {
-
-        // hardcoded item to RecyclerView
-        for (int i = 0; i < 100; i++) {
-
-//            AddModuleItem addModuleItem = new AddModuleItem("item " + i, "item2 " + i, false);
-            TimeTableListItem timeTableListItem = new TimeTableListItem("Tue module " + i, "A000" + i, i % 2 == 0 ? "active" : "inactive", "9-12", "School of Engineering");
-            mTimeTableListItems.add(timeTableListItem);
-
-        }
-
-        mTimeTableListAdapter.notifyDataSetChanged();
-
-    }
+//    private void connectToDataBase() {
+//
+//        // hardcoded item to RecyclerView
+//        for (int i = 0; i < 100; i++) {
+//
+////            AddModuleItem addModuleItem = new AddModuleItem("item " + i, "item2 " + i, false);
+//            TimeTableListItem timeTableListItem = new TimeTableListItem("Tue module " + i, "A000" + i, i % 2 == 0 ? "active" : "inactive", "9-12", "School of Engineering");
+//            mTimeTableListItems.add(timeTableListItem);
+//
+//        }
+//
+//        mTimeTableListAdapter.notifyDataSetChanged();
+//
+//    }
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

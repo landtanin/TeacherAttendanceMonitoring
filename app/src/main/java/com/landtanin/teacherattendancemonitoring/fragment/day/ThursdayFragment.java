@@ -40,6 +40,7 @@ public class ThursdayFragment extends Fragment {
     LinearLayoutManager mLayoutManager;
     TimeTableListAdapter TimeTableListAdapter;
     private Realm realm;
+
     public ThursdayFragment() {
         super();
     }
@@ -81,7 +82,6 @@ public class ThursdayFragment extends Fragment {
         //       in onSavedInstanceState
         realm = Realm.getDefaultInstance();
         RealmResults<LecturerModuleDao> lecturerModuleDao = realm.where(LecturerModuleDao.class).equalTo("day","Thu", Case.SENSITIVE).findAll();
-
 
         Log.w("Thursday_module", String.valueOf(lecturerModuleDao.size()));
 
@@ -127,20 +127,20 @@ public class ThursdayFragment extends Fragment {
 
     }
 
-    private void connectToDataBase() {
-
-        // hardcoded item to RecyclerView
-        for (int i = 0; i < 100; i++) {
-
-//            AddModuleItem addModuleItem = new AddModuleItem("item " + i, "item2 " + i, false);
-            TimeTableListItem timeTableListItem = new TimeTableListItem("Tue module " + i, "A000" + i, i % 2 == 0 ? "active" : "inactive", "9-12", "School of Engineering");
-            mTimeTableListItems.add(timeTableListItem);
-
-        }
-
-        mTimeTableListAdapter.notifyDataSetChanged();
-
-    }
+//    private void connectToDataBase() {
+//
+//        // hardcoded item to RecyclerView
+//        for (int i = 0; i < 100; i++) {
+//
+////            AddModuleItem addModuleItem = new AddModuleItem("item " + i, "item2 " + i, false);
+//            TimeTableListItem timeTableListItem = new TimeTableListItem("Tue module " + i, "A000" + i, i % 2 == 0 ? "active" : "inactive", "9-12", "School of Engineering");
+//            mTimeTableListItems.add(timeTableListItem);
+//
+//        }
+//
+//        mTimeTableListAdapter.notifyDataSetChanged();
+//
+//    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
